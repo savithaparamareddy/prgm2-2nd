@@ -2,26 +2,21 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "poorvipurvi/new_docker_image"
+        DOCKERHUB_CREDENTIALS = 'Docker-credentials'
+        IMAGE_NAME = 'savitha22/new_docker_image1'
     }
 
     stages {
 
-        stage('Checkout SCM') {
-            steps {
-                git 'YOUR_GITHUB_REPO_LINK'
-            }
-        }
-
         stage('Build Java Application') {
             steps {
-                bat 'javac App.java'
+                bat 'javac prime.java'
             }
         }
 
         stage('Run Java Program') {
             steps {
-                bat 'java App'
+                bat 'java prime'
             }
         }
 
@@ -34,12 +29,11 @@ pipeline {
         stage('Login to DockerHub') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
+                credentialsId: 'Docker-credentials',
+                usernameVariable: 'USER',
+                passwordVariable: 'PASS')]) {
 
-                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                    bat 'echo %PASS% | docker login -u %USER% --password-stdin'
                 }
             }
         }
